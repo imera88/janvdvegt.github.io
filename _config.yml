@@ -1,13 +1,13 @@
 # Setup
-title:        Project or Site name
-tagline:      A responsive theme for your project on GitHub Pages
+title:        Blog
+tagline:      Jan van der Vegt - Machine Learning enthousiast
 baseurl:      ""
 paginate:     1
 
 # About/contact
 author:
-  name:       Author name
-  url:        http://yourhomepage.com 
+  name:       Jan van der Vegt
+  url:        http://janvdvegt.github.io 
 
 # Gems
 gems:
