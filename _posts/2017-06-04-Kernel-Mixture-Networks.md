@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Kernel Mixture Networks
+comments: true
 ---
 
 On a regular basis I feel like normal mean regression is not enough for use cases I am working on. Knowing about uncertainty of the reality that we are modeling and of the model itself can add a lot, especially in scenarios where decisions have to be made based on the output of your model. By predicting full probability distributions conditioned on your input (what will out output look like, given this specific input) we get a lot more information if done properly, and this distribution can always be collapsed into a mean again. 
