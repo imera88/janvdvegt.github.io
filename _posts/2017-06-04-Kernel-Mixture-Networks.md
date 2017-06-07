@@ -267,6 +267,8 @@ df.plot(legend=False, linewidth=3, figsize=(12.2, 8))
 
 ![conditional](/images/conditional_density.png "Conditional density test samples")
 
+Make sure to check out the [notebook](https://github.com/janvdvegt/KernelMixtureNetwork/blob/master/notebooks/KMNClass.ipynb) where all of the previous code is gathered.
+
 ## Conclusion
 
 First we looked at some ways to describe distributions and extended this into conditioning those distributions using neural networks. Next to the advantages and disadvantages of different methods, we also dove into an implementation of Mixture Density Networks. In my opinion it's a very clean way of solving this problem. I do believe there are some additional tricks available to get better performance like toying around more with the trainable bandwidths, mixing different kernels similar to mixing multiple bandwidths or different kernel center initialization. The nice thing about this method is that it appear very numerically stable and that you can put it on top of any part of a neural network graph that outputs a single vector given an input, which means this goes on top of CNNs and LSTMs just as well as on normal architectures.
