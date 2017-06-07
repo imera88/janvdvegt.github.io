@@ -132,7 +132,7 @@ In small data scenarios using all the targets as kernel centers is not a bad ide
 
 Using one bandwidth allows for small or wide distributions by putting all the weight in one kernel or spreading the weights over multiple kernels. Instead of having one bandwidth we could also have multiple kernels per center, each with their own bandwidth. This allows for adjusting the spread around one center, based on our input. Here you can see the effect of shifting the weights around one center:
 
-ANIMATIE
+![kernels_shift_one_center](/images/kernels_shift_one_center.gif "Weight shift of one kernel")
 
 Now we will diverge a bit from the paper. There is no real reason to keep the $\sigma$ fixed. Using backpropagation in our networks, we can adjust not just the weights in our network that parameterize the weights over our kernels, but also adjust our $\sigma$. When $\sigma$ becomes too small, the likelihood will get poor because of samples that have a very small density because they are a bit too far from kernels while the likelihood will also be poor with a bandwidth that is too high, because the density of the kernels is too flat. This is something that a network can learn itself very well, and our experiments show this (TODO). Extending this too multiple bandwidths does not work as well as we hoped. What we see is that the list of different $\sigma$ almost converges to the same value. We believe this is due to the fact that for a training batch, all the $\sigma$ will be pulled in the same direction. There are some ways to combat this problem, you could add a penalty term to your loss function that punishes low variance in your $\sigma$ vector which means the network is incentivized to have more different values. Another way is to have one trainable $\sigma$ and use for example $\left[\sigma, 2\sigma, 3\sigma, 4\sigma\right]$ as bandwidths. We have not tested these options yet but they are easy to implement.
 
@@ -197,5 +197,67 @@ train = tf.train.AdamOptimizer().minimize(mean_loss)
 
 Once we have our train operation in our TensorFlow graph we can pass batches and optimize our network. If we want to sample from a conditional distribution, we can first sample from our weights output which is a discrete probability distribution, and then from the corresponding kernel. Our class made using Edward has a clean sampling method baked in.
 
-## Keras class
+## Plug and play class
+
+We worked on a basic class that you can use to build Kernel Mixture Networks. You can plug in your own base estimator made in TensorFlow or Keras and fit it to your data. While it is not very extensive it should be easy to extend it with allowing lists of input placeholders or using different kernels or center strategies. Here we will go over a quick example using a toy dataset from the [Edward](http://cbonnett.github.io/MDN_EDWARD_KERAS_TF.html) website:
+
+```python
+def build_toy_dataset(nsample=40000):
+    y_data = np.float32(np.random.uniform(-10.5, 10.5, (1, nsample))).T
+    r_data = np.float32(np.random.normal(size=(nsample,1))) # random noise
+    x_data = np.float32(np.sin(0.75*y_data)*7.0+y_data*0.5+r_data*1.0)
+    X_train, X_test, y_train, y_test = train_test_split(x_data, y_data, random_state=42, train_size=0.5)
+    return X_train, X_test, y_train.ravel(), y_test.ravel()
+
+X_train, X_test, y_train, y_test = build_toy_dataset(40000)
+
+sns.regplot(X_train, y_train, fit_reg=False)
+```
+
+![toydata](/images/toydata.png "Toy dataset")
+
+Let's build a normal, feed forward network in Keras as the start of our Kernel Mixture network, next to our customer class, all we need are a placeholder from TensorFlow and the Dense layer from Keras.
+
+```python
+from src.kmn import KernelMixtureNetwork
+from keras.layers import Dense
+import tensorflow as tf
+
+X_ph = tf.placeholder(tf.float32, [None, 1])
+model = Dense(32, activation='relu')(X_ph)
+model = Dense(16, activation='relu')(model)
+model = KernelMixtureNetwork(estimator=model, X_ph=X_ph, train_scales=True)
+kmn.fit(X_train, y_train, n_epoch=300, eval_set=(X_test, y_test))
+```
+
+We can plot our loss curves via .plot_loss()
+
+```python
+kmn.plot_loss()
+```
+
+![losscurve](/images/losscurve.PNG "Loss curve")
+
+Now we can sample from the network conditioned on the $x$ values in our test set and look at the density in total, and zoom in on a few examples (they are the vertical, colored lines).
+
+```python
+samples = model.sample(X_test)
+jp = sns.jointplot(X_test.ravel(), samples, kind="hex", stat_func=None, size=10)
+jp.ax_joint.add_line(Line2D([X_test[0][0], X_test[0][0]], [-40, 40], linewidth=3))
+jp.ax_joint.add_line(Line2D([X_test[1][0], X_test[1][0]], [-40, 40], color='g', linewidth=3))
+jp.ax_joint.add_line(Line2D([X_test[2][0], X_test[2][0]], [-40, 40], color='r', linewidth=3))
+```
+
+![hexplot](/images/hexplot.png "Hex plot total density")
+
+As we can see here, the total population of our samples certainly resembles our input. The conditional density of the first three samples also fit very well:
+
+```python
+d = model.predict_density(X_test[0:3,:].reshape(-1,1), resolution=1000)
+df = pd.DataFrame(d).transpose()
+df.index = np.linspace(kmn.y_min, kmn.y_max, num=1000)
+df.plot(legend=False, linewidth=3, figsize=(12.2, 8))
+```
+
+![conditional](/images/conditional_density.png "Conditional density test samples")
 
