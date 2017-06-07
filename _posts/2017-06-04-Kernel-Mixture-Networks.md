@@ -148,7 +148,7 @@ Of course the output dimensions itself are not uncorrelated, but they both depen
 
 ## Implementation
 
-We have [implemented](https://github.com/janvdvegt/KMN/blob/master/src/kmn.py) the paper and ideas in a class consiting of a combination of TensorFlow, Edward and Keras, where you can easily plugin your own network and data and add a Kernel Mixture Network output layer to output conditional distributions over your target. Here we will look at an implementation in TensorFlow which is a bit lower level, to get a better understanding of how it works. We will use k-means clustering from sci-kit learn for finding the centers and use Gaussian kernels with multiple, non-trainable bandwidths.
+We have [implemented](https://github.com/janvdvegt/KernelMixtureNetwork/) the paper and ideas in a class consiting of a combination of TensorFlow, Edward and Keras, where you can easily plugin your own network and data and add a Kernel Mixture Network output layer to output conditional distributions over your target. Here we will look at an implementation in TensorFlow which is a bit lower level, to get a better understanding of how it works. We will use k-means clustering from sci-kit learn for finding the centers and use Gaussian kernels with multiple, non-trainable bandwidths.
 
 First we need to cluster the targets, here is an easy routine for 'k-means:
 
@@ -205,7 +205,7 @@ Once we have our train operation in our TensorFlow graph we can pass batches and
 
 ## Plug and play class
 
-We worked on a basic class that you can use to build Kernel Mixture Networks. You can plug in your own base estimator made in TensorFlow or Keras and fit it to your data. While it is not very extensive it should be easy to extend it with allowing lists of input placeholders or using different kernels or center strategies. Here we will go over a quick example using a toy dataset from the [Edward](http://cbonnett.github.io/MDN_EDWARD_KERAS_TF.html) website:
+We worked on a [basic class](https://github.com/janvdvegt/KernelMixtureNetwork/) that you can use to build Kernel Mixture Networks. You can plug in your own base estimator made in TensorFlow or Keras and fit it to your data. While it is not very extensive it should be easy to extend it with allowing lists of input placeholders or using different kernels or center strategies. Here we will go over a quick example using a toy dataset from the [Edward](http://cbonnett.github.io/MDN_EDWARD_KERAS_TF.html) website:
 
 ```python
 def build_toy_dataset(nsample=40000):
