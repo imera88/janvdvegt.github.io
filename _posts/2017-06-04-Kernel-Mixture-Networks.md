@@ -134,7 +134,7 @@ Using one bandwidth allows for small or wide distributions by putting all the we
 
 ![kernels_shift_one_center](/images/kernels_shift_one_center.gif "Weight shift of one kernel")
 
-Now we will diverge a bit from the paper. There is no real reason to keep the $\sigma$ fixed. Using backpropagation in our networks, we can adjust not just the weights in our network that parameterize the weights over our kernels, but also adjust our $\sigma$. When $\sigma$ becomes too small, the likelihood will get poor because of samples that have a very small density because they are a bit too far from kernels while the likelihood will also be poor with a bandwidth that is too high, because the density of the kernels is too flat. This is something that a network can learn itself very well, and our experiments show this (TODO). Extending this too multiple bandwidths does not work as well as we hoped. What we see is that the list of different $\sigma$ almost converges to the same value. We believe this is due to the fact that for a training batch, all the $\sigma$ will be pulled in the same direction. There are some ways to combat this problem, you could add a penalty term to your loss function that punishes low variance in your $\sigma$ vector which means the network is incentivized to have more different values. Another way is to have one trainable $\sigma$ and use for example $\left[\sigma, 2\sigma, 3\sigma, 4\sigma\right]$ as bandwidths. We have not tested these options yet but they are easy to implement.
+Now we will diverge a bit from the paper. There is no real reason to keep the $\sigma$ fixed. Using backpropagation in our networks, we can adjust not just the weights in our network that parameterize the weights over our kernels, but also adjust our $\sigma$. When $\sigma$ becomes too small, the likelihood will get poor because of samples that have a very small density because they are a bit too far from kernels while the likelihood will also be poor with a bandwidth that is too high, because the density of the kernels is too flat. This is something that a network can learn itself relatively easy. Extending this to multiple bandwidths does not work as well as we hoped. What we see is that the list of different $\sigma$ almost converges to the same value. We believe this is due to the fact that for a training batch, all the $\sigma$ will be pulled in the same direction. There are some ways to combat this problem, you could add a penalty term to your loss function that punishes low variance in your $\sigma$ vector which means the network is incentivized to have more different values. Another way is to have one trainable $\sigma$ and use for example $\left[\sigma, 2\sigma, 3\sigma, 4\sigma\right]$ as bandwidths. We have not tested these options yet but they are easy to implement.
 
 Another thing to notice is that this concept is very natural to extend to multiple output dimensions. Instead of using 1-dimensional Gaussian kernels, we can also use **n**-dimensional Gaussian kernels, by using the squared norm between the $\mathbf{y}$ and $\mathbf{y}'$ output vectors. If we look at the uncorrelated multivariate Gaussian distribution, our Kernel function turns into:
 
@@ -248,7 +248,7 @@ jp.ax_joint.add_line(Line2D([X_test[1][0], X_test[1][0]], [-40, 40], color='g', 
 jp.ax_joint.add_line(Line2D([X_test[2][0], X_test[2][0]], [-40, 40], color='r', linewidth=3))
 ```
 
-![hexplot](/images/hexplot.png "Hex plot total density")
+![hexplot](/images/hexplot.PNG "Hex plot total density")
 
 As we can see here, the total population of our samples certainly resembles our input. The conditional density of the first three samples also fit very well:
 
@@ -261,3 +261,8 @@ df.plot(legend=False, linewidth=3, figsize=(12.2, 8))
 
 ![conditional](/images/conditional_density.png "Conditional density test samples")
 
+## Conclusion
+
+First we looked at some ways to describe distributions and extended this into conditioning those distributions using neural networks. Next to the advantages and disadvantages of different methods, we also dove into an implementation of Mixture Density Networks. In my opinion it's a very clean way of solving this problem. I do believe there are some additional tricks available to get better performance like toying around more with the trainable bandwidths, mixing different kernels similar to mixing multiple bandwidths or different kernel center initialization. The nice thing about this method is that it appear very numerically stable and that you can put it on top of any part of a neural network graph that outputs a single vector given an input, which means this goes on top of CNNs and LSTMs just as well as on normal architectures.
+
+I learned a lot during this small project and I hope you did as well by reading my first blog post. I would be happy to get feedback on the content and on the structure of this post, because I already have a few other topics scheduled. Thank you for reading!
