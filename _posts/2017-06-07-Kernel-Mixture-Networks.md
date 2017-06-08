@@ -14,7 +14,7 @@ Common use cases are:
 - Reversed quantile information, estimating the probability that the output will be lower or higher than a non-predetermined $y$
 - Having non-linear costs after the output that require more knowledge than the expected value
 
-In this blog post I will first look at common approaches to unconditional density estimation and subsequently extend these approaches to conditional density estimations. Next, I will examine a freshly released paper called [The Kernel Mixture Network: A Nonparametric Method for Conditional Density Estimation of Continuous Random Variables](https://arxiv.org/abs/1705.07111) where the authors use a new combination to tackle this problem. In addition to going through a Python implementation by a colleague and myself, we will also consider some potential extensions of this paper.
+In this blog post I will first look at common approaches to unconditional density estimation and subsequently extend these approaches to conditional density estimations. Next, I will examine a freshly released paper called [The Kernel Mixture Network: A Nonparametric Method for Conditional Density Estimation of Continuous Random Variables](https://arxiv.org/abs/1705.07111) where the authors use a new combination to tackle this problem. In addition to going through a Python implementation by my colleague [Alexander Backus](https://nl.linkedin.com/in/alexander-backus-23106021) and myself, we will also consider some potential extensions of this paper.
 
 # Unconditional density estimation
 
